@@ -1,7 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 public class Neiron
 {
@@ -12,9 +9,6 @@ public class Neiron
     public double[,] veight; // массив весов - именно это и есть память нейрона
     public int countTrainig; // количество вариантов образа в памяти
                              // нужно для правильного пересчёта весов при обучении
-
-    // конструктор
-    public Neiron() { }
 
     // получить имя
     public string GetName() { return obj_name; }

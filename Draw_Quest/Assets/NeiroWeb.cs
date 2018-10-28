@@ -1,10 +1,8 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
 using Unity.Core.IO.ScriptSerialization;
-
 
 public class NeiroWeb
 {
@@ -16,9 +14,10 @@ public class NeiroWeb
     private const string memory = "memory.txt"; // имя файла хранения сети
     private List<Neiron> neironArray = null; // массив нейронов
 
-    // конструктор
+    // конструктор(нет)
     public NeiroWeb()
     {
+        Debug.Log("InitWeb");
         neironArray = InitWeb();
     }
 
@@ -34,11 +33,10 @@ public class NeiroWeb
         string[] lines = File.ReadAllLines(memory);
         if (lines.Length == 0) return new List<Neiron>();
         string jStr = lines[0];
+
         JavaScriptSerializer json = new JavaScriptSerializer();
-        List<System.Object> objects = json.Deserialize<List<System.Object>>(jStr);
-        List<Neiron> res = new List<Neiron>();
-        foreach (var o in objects) res.Add(NeironCreate((Dictionary<string, System.Object>)o));
-        return res;
+
+        return json.Deserialize<List<Neiron>>(jStr);
     }
 
     // преобразовать структуру данных в клас нейрона
