@@ -45,14 +45,14 @@ public class NeiroWeb
         Neiron res = new Neiron();
         res.obj_name = (string)o["obj_name"];
         res.countTrainig = (int)o["countTrainig"];
-        System.Object[] veightData = (System.Object[])o["veight"];
-        int arrSize = (int)Math.Sqrt(veightData.Length);
-        res.veight = new double[arrSize, arrSize];
+        System.Object[] weightsData = (System.Object[])o["weights"];
+        int arrSize = (int)Math.Sqrt(weightsData.Length);
+        res.weight = new double[arrSize, arrSize];
         int index = 0;
-        for (int n = 0; n < res.veight.GetLength(0); n++)
-            for (int m = 0; m < res.veight.GetLength(1); m++)
+        for (int n = 0; n < res.weight.GetLength(0); n++)
+            for (int m = 0; m < res.weight.GetLength(1); m++)
             {
-                res.veight[n, m] = Double.Parse(veightData[index].ToString());
+                res.weight[n, m] = Double.Parse(weightsData[index].ToString());
                 index++;
             }
         return res;

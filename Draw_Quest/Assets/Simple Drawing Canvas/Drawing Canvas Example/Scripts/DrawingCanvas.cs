@@ -16,7 +16,6 @@ public class DrawingCanvas : MonoBehaviour
     public Toggle EnableTraningToggle;
 
     private bool enableTraining = false;
-
     private int[,] arr;
     private NeiroWeb nw;
     //-----------------------------------------------------------
@@ -250,6 +249,8 @@ public class DrawingCanvas : MonoBehaviour
 
     public void Learn()
     {
+        textureDrawingAux.SaveToFile(FILENAME);
+
         if (System.IO.File.Exists(Application.persistentDataPath + "/" + FILENAME))
         {
             byte[] bytes = File.ReadAllBytes(Application.persistentDataPath + "/" + FILENAME);
@@ -258,6 +259,7 @@ public class DrawingCanvas : MonoBehaviour
             texture.LoadImage(bytes);
 
             int[,] clipArr = NeiroGraphUtils.CutImageToArray(texture, new Vector2(texture.width, texture.height));
+            Debug.Log("Изображение на входе - width: " + texture.width + "height: " + texture.height);
             if (clipArr == null) return;
             arr = NeiroGraphUtils.LeadArray(clipArr, new int[NeiroWeb.neironInArrayWidth, NeiroWeb.neironInArrayHeight]);
             string s = nw.CheckLitera(arr);
@@ -268,10 +270,6 @@ public class DrawingCanvas : MonoBehaviour
             {
                 nw.SetTraining(s, arr);
                 Debug.Log("Обучение прошло успешно");
-
-                //for (int i = 0; i < 100; i++)
-                //    for (int j = 0; j < 100; j++)
-                //        Debug.Log(arr[i, j]);
             }
         }
         //IMG1.material.mainTexture = (Texture2D)imageCanvas.material.mainTexture;//NeiroGraphUtils.GetBitmapFromArr(clipArr);
@@ -288,6 +286,7 @@ public class DrawingCanvas : MonoBehaviour
     public void AddObj()
     {
         AddObjectToList(new_objInputField.text);
+        new_objInputField.text = "";
     }
 
     // процедура помещает строку в список значений
@@ -321,18 +320,25 @@ public class DrawingCanvas : MonoBehaviour
 
     public void ObjectToMemory()
     {
-        //string litera = comboBox.SelectedIndex >= 0 ? (string)comboBox.Items[comboBox.SelectedIndex] : comboBox.Text;
-        string litera = objDropdown.options[objDropdown.value].text;
-
-        if (litera.Length == 0)
+        if (enableTraining)
         {
-            Debug.Log("Не выбран ни один символ для занесения в память.");
-            return;
+            //string litera = comboBox.SelectedIndex >= 0 ? (string)comboBox.Items[comboBox.SelectedIndex] : comboBox.Text;
+            string litera = objDropdown.options[objDropdown.value].text;
+
+            if (litera.Length == 0)
+            {
+                Debug.Log("Не выбран ни один символ для занесения в память.");
+                return;
+            }
+            nw.SetTraining(litera, arr);
+            //NeiroGraphUtils.ClearImage(pictureBox1);
+            //NeiroGraphUtils.ClearImage(pictureBox2);
+            //NeiroGraphUtils.ClearImage(pictureBox3);
+            Debug.Log("Выбранный символ '" + litera + "' успешно добавлен в память сети");
         }
-        nw.SetTraining(litera, arr);
-        //NeiroGraphUtils.ClearImage(pictureBox1);
-        //NeiroGraphUtils.ClearImage(pictureBox2);
-        //NeiroGraphUtils.ClearImage(pictureBox3);
-        Debug.Log("Выбранный символ '" + litera + "' успешно добавлен в память сети");
+        else
+        {
+            Debug.Log("Режим обучения не включен, ничего не произошло.");
+        }
     }
 }

@@ -12,31 +12,31 @@ public class NeiroGraphUtils
         texture = new Texture2D(texture.width, texture.height);
     }
 
-    // преобразовать рисунок в массив, все цвета кроме белого заносятся как 1, белый  - 0
-    public static int[,] GetArrayFromBitmap(Texture2D image)
-    {
-        int[,] res = new int[image.width, image.height];
-        for (int n = 0; n < res.GetLength(0); n++)
-            for (int m = 0; m < res.GetLength(1); m++)
-            {
-                int color = ((int)image.GetPixel(n, m).r + (int)image.GetPixel(n, m).g + (int)image.GetPixel(n, m).b) / 3;
-                res[n, m] = color > 0 ? 1 : 0;
-            }
-        return res;
-    }
+    //// преобразовать рисунок в массив, все цвета кроме белого заносятся как 1, белый  - 0
+    //public static int[,] GetArrayFromTexture(Texture2D image)
+    //{
+    //    int[,] res = new int[image.width, image.height];
+    //    for (int n = 0; n < res.GetLength(0); n++)
+    //        for (int m = 0; m < res.GetLength(1); m++)
+    //        {
+    //            int color = ((int)image.GetPixel(n, m).r + (int)image.GetPixel(n, m).g + (int)image.GetPixel(n, m).b) / 3;
+    //            res[n, m] = color > 0 ? 1 : 0;
+    //        }
+    //    return res;
+    //}
 
-    // преобразовать массив в рисунок
-    public static Texture2D GetBitmapFromArr(int[,] array)
-    {
-        Texture2D bitmap = new Texture2D(array.GetLength(0), array.GetLength(1));
-        for (int x = 0; x < array.GetLength(0); x++)
-            for (int y = 0; y < array.GetLength(1); y++)
-                if (array[x, y] == 0)
-                    bitmap.SetPixel(x, y, Color.white);
-                else
-                    bitmap.SetPixel(x, y, Color.black);
-        return bitmap;
-    }
+    //// преобразовать массив в рисунок
+    //public static Texture2D GetTextureFromArr(int[,] array)
+    //{
+    //    Texture2D bitmap = new Texture2D(array.GetLength(0), array.GetLength(1));
+    //    for (int x = 0; x < array.GetLength(0); x++)
+    //        for (int y = 0; y < array.GetLength(1); y++)
+    //            if (array[x, y] == 0)
+    //                bitmap.SetPixel(x, y, Color.white);
+    //            else
+    //                bitmap.SetPixel(x, y, Color.black);
+    //    return bitmap;
+    //}
 
     //обрезать рисунок по краям и преобразовать в массив
     public static int[,] CutImageToArray(Texture2D b, Vector2 max)
@@ -45,19 +45,19 @@ public class NeiroGraphUtils
         int y1 = 0;
         int x2 = (int)max.x;
         int y2 = (int)max.y;
-
+        
         for (int y = 0; y < b.height && y1 == 0; y++)
             for (int x = 0; x < b.width && y1 == 0; x++)
-                if (b.GetPixel(x, y).a /*ToArgb()*/ != 0) y1 = y;
+                if (b.GetPixel(x, y) != Color.white) y1 = y;
         for (int y = b.height - 1; y >= 0 && y2 == max.y; y--)
             for (int x = 0; x < b.width && y2 == max.y; x++)
-                if (b.GetPixel(x, y).a/*ToArgb()*/ != 0) y2 = y;
+                if (b.GetPixel(x, y) != Color.white) y2 = y;
         for (int x = 0; x < b.width && x1 == 0; x++)
             for (int y = 0; y < b.height && x1 == 0; y++)
-                if (b.GetPixel(x, y).a/*ToArgb()*/ != 0) x1 = x;
+                if (b.GetPixel(x, y) != Color.white) x1 = x;
         for (int x = b.width - 1; x >= 0 && x2 == max.x; x--)
             for (int y = 0; y < b.height && x2 == max.x; y++)
-                if (b.GetPixel(x, y).a/*ToArgb()*/ != 0) x2 = x;
+                if (b.GetPixel(x, y) != Color.white) x2 = x;
 
         if (x1 == 0 && y1 == 0 && x2 == max.x && y2 == max.y) return null;
 
@@ -74,7 +74,7 @@ public class NeiroGraphUtils
                 if (pX < 0 || pX >= max.x || pY < 0 || pY >= max.y)
                     res[x, y] = 0;
                 else
-                    res[x, y] = b.GetPixel(x + x1 - dx, y + y1 - dy).a/*ToArgb()*/ == 0 ? 0 : 1;
+                    res[x, y] = b.GetPixel(x + x1 - dx, y + y1 - dy) == Color.white ? 0 : 1;
             }
         return res;
     }
