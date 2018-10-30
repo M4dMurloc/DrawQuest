@@ -45,7 +45,7 @@ public class NeiroGraphUtils
         int y1 = 0;
         int x2 = (int)max.x;
         int y2 = (int)max.y;
-        
+
         for (int y = 0; y < b.height && y1 == 0; y++)
             for (int x = 0; x < b.width && y1 == 0; x++)
                 if (b.GetPixel(x, y) != Color.white) y1 = y;
@@ -66,6 +66,7 @@ public class NeiroGraphUtils
         int dy = y2 - y1 < x2 - x1 ? ((x2 - x1) - (y2 - y1)) / 2 : 0;
 
         int[,] res = new int[size, size];
+
         for (int x = 0; x < res.GetLength(0); x++)
             for (int y = 0; y < res.GetLength(1); y++)
             {

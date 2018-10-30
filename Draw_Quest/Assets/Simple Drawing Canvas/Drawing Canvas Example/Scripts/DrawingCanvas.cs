@@ -32,6 +32,7 @@ public class DrawingCanvas : MonoBehaviour
     public Color eraseColor = Color.white;
 
     TextureDrawingAux textureDrawingAux;
+    Texture2D texture;
 
     /// <summary>
     /// Action currently taken when touching the image
@@ -76,16 +77,15 @@ public class DrawingCanvas : MonoBehaviour
         yield return null;
 
         //If a saved file exists, load it and draw it on the texture, else start a new one
-        if (System.IO.File.Exists(Application.persistentDataPath + "/" + FILENAME))
-        {
-            byte[] bytes = File.ReadAllBytes(Application.persistentDataPath + "/" + FILENAME); //Application.persistentDataPath + "/" + 
+        //if (System.IO.File.Exists(Application.persistentDataPath + "/" + FILENAME))
+        //{
+        //    byte[] bytes = File.ReadAllBytes(Application.persistentDataPath + "/" + FILENAME); //Application.persistentDataPath + "/" + 
 
-            Texture2D texture = new Texture2D(1, 1, TextureFormat.RGBA32, false);
-            texture.LoadImage(bytes);
+        //    texture = new Texture2D(1, 1, TextureFormat.RGBA32, false);
+        //    texture.LoadImage(bytes);
 
-            textureDrawingAux.DrawTexture(textureDrawingAux.Width / 2 - texture.width / 2, textureDrawingAux.Height / 2 - texture.height / 2, texture);
-        }
-
+        //    textureDrawingAux.DrawTexture(textureDrawingAux.Width / 2 - texture.width / 2, textureDrawingAux.Height / 2 - texture.height / 2, texture);
+        //}
     }
 
     void Update()
@@ -227,18 +227,13 @@ public class DrawingCanvas : MonoBehaviour
 
     void Awake()
     {
-        //NeiroGraphUtils.ClearImage(texture);
-        //NeiroGraphUtils.ClearImage();
         nw = new NeiroWeb();
-        //string[] items = nw.GetLiteras();
+
         List<string> items = new List<string>(nw.GetLiteras());
 
-        //objDropdown.options[objDropdown.value].text;
         if (items.Count > 0)
         {
             objDropdown.AddOptions(items);
-            //comboBox.Items.AddRange(items);
-            //comboBox.SelectedIndex = 0;
         }
     }
 
@@ -249,38 +244,32 @@ public class DrawingCanvas : MonoBehaviour
 
     public void Learn()
     {
-        textureDrawingAux.SaveToFile(FILENAME);
+        SaveToFile();
 
-        if (System.IO.File.Exists(Application.persistentDataPath + "/" + FILENAME))
+        RefreshTexture();
+
+        int[,] clipArr = NeiroGraphUtils.CutImageToArray(texture, new Vector2(texture.width, texture.height));
+        //Debug.Log("Изображение на входе - width: " + texture.width + "height: " + texture.height);
+        if (clipArr == null) return;
+        arr = NeiroGraphUtils.LeadArray(clipArr, new int[NeiroWeb.neironInArrayWidth, NeiroWeb.neironInArrayHeight]);
+        string s = nw.CheckLitera(arr);
+        if (s == null) s = "null";
+
+        Debug.Log("Результат распознавания: " + s);
+
+        if (enableTraining)
         {
-            byte[] bytes = File.ReadAllBytes(Application.persistentDataPath + "/" + FILENAME);
+            nw.SetTraining(s, arr);
+            Debug.Log("Обучение прошло успешно");
 
-            Texture2D texture = new Texture2D(1, 1, TextureFormat.RGBA32, false);
-            texture.LoadImage(bytes);
-
-            int[,] clipArr = NeiroGraphUtils.CutImageToArray(texture, new Vector2(texture.width, texture.height));
-            Debug.Log("Изображение на входе - width: " + texture.width + "height: " + texture.height);
-            if (clipArr == null) return;
-            arr = NeiroGraphUtils.LeadArray(clipArr, new int[NeiroWeb.neironInArrayWidth, NeiroWeb.neironInArrayHeight]);
-            string s = nw.CheckLitera(arr);
-            if (s == null) s = "null";
-            Debug.Log(s);
-
-            if (enableTraining)
-            {
-                nw.SetTraining(s, arr);
-                Debug.Log("Обучение прошло успешно");
-            }
+            ClearCanvas();
         }
+
         //IMG1.material.mainTexture = (Texture2D)imageCanvas.material.mainTexture;//NeiroGraphUtils.GetBitmapFromArr(clipArr);
         //IMG2.material.mainTexture = NeiroGraphUtils.GetBitmapFromArr(arr);
         //DialogResult askResult = MessageBox.Show("Результат распознавания - " + s + " ?", "", MessageBoxButtons.YesNo);
         //if (askResult != DialogResult.Yes || !enableTraining || MessageBox.Show("Добавить этот образ в память нейрона '" + s + "'", "", MessageBoxButtons.YesNo) != DialogResult.Yes) return;
         //nw.SetTraining(s, arr);
-        // очищаем рисунки
-        //ClearCanvas();
-        //NeiroGraphUtils.ClearImage(pictureBox2);
-        //NeiroGraphUtils.ClearImage(pictureBox3);
     }
 
     public void AddObj()
@@ -322,7 +311,10 @@ public class DrawingCanvas : MonoBehaviour
     {
         if (enableTraining)
         {
-            //string litera = comboBox.SelectedIndex >= 0 ? (string)comboBox.Items[comboBox.SelectedIndex] : comboBox.Text;
+            SaveToFile();
+
+            RefreshTexture();
+
             string litera = objDropdown.options[objDropdown.value].text;
 
             if (litera.Length == 0)
@@ -331,14 +323,29 @@ public class DrawingCanvas : MonoBehaviour
                 return;
             }
             nw.SetTraining(litera, arr);
-            //NeiroGraphUtils.ClearImage(pictureBox1);
-            //NeiroGraphUtils.ClearImage(pictureBox2);
-            //NeiroGraphUtils.ClearImage(pictureBox3);
+
             Debug.Log("Выбранный символ '" + litera + "' успешно добавлен в память сети");
+
+            ClearCanvas();
         }
         else
         {
             Debug.Log("Режим обучения не включен, ничего не произошло.");
+        }
+    }
+
+    public void RefreshTexture()
+    {
+        if (System.IO.File.Exists(Application.persistentDataPath + "/" + FILENAME))
+        {
+            byte[] bytes = File.ReadAllBytes(Application.persistentDataPath + "/" + FILENAME);
+
+            texture = new Texture2D(1, 1, TextureFormat.RGBA32, false);
+            texture.LoadImage(bytes);
+        }
+        else
+        {
+            Debug.Log("Не удалось открыть изображение.");
         }
     }
 }

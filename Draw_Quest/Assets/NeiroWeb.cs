@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
-using Unity.Core.IO.ScriptSerialization;
+using Newtonsoft.Json;
 
 public class NeiroWeb
 {
@@ -14,14 +14,13 @@ public class NeiroWeb
     private const string memory = "memory.txt"; // имя файла хранения сети
     private List<Neiron> neironArray = null; // массив нейронов
 
-    // конструктор(нет)
     public NeiroWeb()
     {
         Debug.Log("InitWeb");
         neironArray = InitWeb();
     }
 
-    // функция открывает текстовой файл и преобразовывает его в массив нейронов
+    //Открывает текстовой файл и преобразовывает его в массив нейронов
     private static List<Neiron> InitWeb()
     {
         if (!File.Exists(memory))
@@ -30,37 +29,17 @@ public class NeiroWeb
             return new List<Neiron>();
         }
         Debug.Log("файл найден");
+
         string[] lines = File.ReadAllLines(memory);
         if (lines.Length == 0) return new List<Neiron>();
+        
         string jStr = lines[0];
-
-        JavaScriptSerializer json = new JavaScriptSerializer();
-
-        return json.Deserialize<List<Neiron>>(jStr);
+        return JsonConvert.DeserializeObject<List<Neiron>>(jStr);
     }
 
-    // преобразовать структуру данных в клас нейрона
-    private static Neiron NeironCreate(Dictionary<string, object> o)
-    {
-        Neiron res = new Neiron();
-        res.obj_name = (string)o["obj_name"];
-        res.countTrainig = (int)o["countTrainig"];
-        System.Object[] weightsData = (System.Object[])o["weights"];
-        int arrSize = (int)Math.Sqrt(weightsData.Length);
-        res.weight = new double[arrSize, arrSize];
-        int index = 0;
-        for (int n = 0; n < res.weight.GetLength(0); n++)
-            for (int m = 0; m < res.weight.GetLength(1); m++)
-            {
-                res.weight[n, m] = Double.Parse(weightsData[index].ToString());
-                index++;
-            }
-        return res;
-    }
-
-    // функция сравнивает входной массив с каждым нейроном из сети и 
-    // возвращает имя нейрона наиболее похожего на него
-    // именно эта функция отвечает за распознавание образа
+    //Сравнивает входной массив с каждым нейроном из сети и 
+    //возвращает имя нейрона наиболее похожего на него
+    //именно эта функция отвечает за распознавание образа
 
     public string CheckLitera(int[,] arr)
     {
@@ -79,17 +58,16 @@ public class NeiroWeb
         return res;      
     }
 
-    // функция сохраняет массив нейронов в файл
+    //Сохраняет массив нейронов в файл
     public void SaveState()
     {
-        JavaScriptSerializer json = new JavaScriptSerializer();
-        string jStr = json.Serialize(neironArray);
-        System.IO.StreamWriter file = new System.IO.StreamWriter(memory);
-        file.WriteLine(jStr);
+        string json = JsonConvert.SerializeObject(neironArray);
+        StreamWriter file = new StreamWriter(memory);
+        file.WriteLine(json);
         file.Close();
     }
 
-    // получить список имён образов, имеющихся в памяти
+    //Получить список имён образов, имеющихся в памяти
     public string[] GetLiteras()
     {
         var res = new List<string>();
