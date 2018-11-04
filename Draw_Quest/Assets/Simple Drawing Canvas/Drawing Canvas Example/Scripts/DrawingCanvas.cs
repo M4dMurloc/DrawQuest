@@ -14,6 +14,7 @@ public class DrawingCanvas : MonoBehaviour
     public InputField new_objInputField;
     public Dropdown objDropdown;
     public Toggle EnableTraningToggle;
+    public Text resultText;
 
     private bool enableTraining = false;
     private int[,] arr;
@@ -32,7 +33,6 @@ public class DrawingCanvas : MonoBehaviour
     public Color eraseColor = Color.white;
 
     TextureDrawingAux textureDrawingAux;
-    Texture2D texture;
 
     /// <summary>
     /// Action currently taken when touching the image
@@ -81,7 +81,7 @@ public class DrawingCanvas : MonoBehaviour
         //{
         //    byte[] bytes = File.ReadAllBytes(Application.persistentDataPath + "/" + FILENAME); //Application.persistentDataPath + "/" + 
 
-        //    texture = new Texture2D(1, 1, TextureFormat.RGBA32, false);
+        //    Texture2D texture = new Texture2D(1, 1, TextureFormat.RGBA32, false);
         //    texture.LoadImage(bytes);
 
         //    textureDrawingAux.DrawTexture(textureDrawingAux.Width / 2 - texture.width / 2, textureDrawingAux.Height / 2 - texture.height / 2, texture);
@@ -145,14 +145,6 @@ public class DrawingCanvas : MonoBehaviour
     public void ClearCanvas()
     {
         textureDrawingAux.Clear(eraseColor);
-    }
-
-    /// <summary>
-    /// Save the current texture to <see cref="FILENAME"/>
-    /// </summary>
-    public void SaveToFile()
-    {
-        textureDrawingAux.SaveToFile(FILENAME);
     }
 
     //Callback. Draws a single circle where we touched the texture
@@ -244,23 +236,21 @@ public class DrawingCanvas : MonoBehaviour
 
     public void Learn()
     {
-        SaveToFile();
+        int[,] clipArr = NeiroGraphUtils.CutImageToArray(textureDrawingAux.Texture, new Vector2(textureDrawingAux.Texture.width, textureDrawingAux.Texture.height));
 
-        RefreshTexture();
-
-        int[,] clipArr = NeiroGraphUtils.CutImageToArray(texture, new Vector2(texture.width, texture.height));
-        //Debug.Log("Изображение на входе - width: " + texture.width + "height: " + texture.height);
         if (clipArr == null) return;
         arr = NeiroGraphUtils.LeadArray(clipArr, new int[NeiroWeb.neironInArrayWidth, NeiroWeb.neironInArrayHeight]);
         string s = nw.CheckLitera(arr);
         if (s == null) s = "null";
 
         Debug.Log("Результат распознавания: " + s);
+        resultText.text = "Результат распознавания: " + s;
 
         if (enableTraining)
         {
             nw.SetTraining(s, arr);
             Debug.Log("Обучение прошло успешно");
+            resultText.text += ". Обучение прошло успешно.";
 
             ClearCanvas();
         }
@@ -311,41 +301,30 @@ public class DrawingCanvas : MonoBehaviour
     {
         if (enableTraining)
         {
-            SaveToFile();
-
-            RefreshTexture();
-
             string litera = objDropdown.options[objDropdown.value].text;
 
             if (litera.Length == 0)
             {
                 Debug.Log("Не выбран ни один символ для занесения в память.");
+                resultText.text = "Не выбран ни один символ для занесения в память.";
                 return;
             }
             nw.SetTraining(litera, arr);
 
             Debug.Log("Выбранный символ '" + litera + "' успешно добавлен в память сети");
+            resultText.text = "Выбранный символ '" + litera + "' успешно добавлен в память сети";
 
             ClearCanvas();
         }
         else
         {
             Debug.Log("Режим обучения не включен, ничего не произошло.");
+            resultText.text = "Режим обучения не включен, ничего не произошло.";
         }
     }
 
-    public void RefreshTexture()
+    public void AppQuit()
     {
-        if (System.IO.File.Exists(Application.persistentDataPath + "/" + FILENAME))
-        {
-            byte[] bytes = File.ReadAllBytes(Application.persistentDataPath + "/" + FILENAME);
-
-            texture = new Texture2D(1, 1, TextureFormat.RGBA32, false);
-            texture.LoadImage(bytes);
-        }
-        else
-        {
-            Debug.Log("Не удалось открыть изображение.");
-        }
+        Application.Quit();
     }
 }

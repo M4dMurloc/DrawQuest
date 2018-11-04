@@ -23,14 +23,18 @@ public class NeiroWeb
     //Открывает текстовой файл и преобразовывает его в массив нейронов
     private static List<Neiron> InitWeb()
     {
-        if (!File.Exists(memory))
+        if (!File.Exists(Application.persistentDataPath + "/" + memory))
         {
-            Debug.Log("файл не найден, создаю новый");
-            return new List<Neiron>();
+            Debug.Log("файл не найден, беру из ресурсов");
+
+            TextAsset text_asset = Resources.Load<TextAsset>("memory");
+            string jStr_res = text_asset.text;
+
+            return JsonConvert.DeserializeObject<List<Neiron>>(jStr_res);
         }
         Debug.Log("файл найден");
 
-        string[] lines = File.ReadAllLines(memory);
+        string[] lines = File.ReadAllLines(Application.persistentDataPath + "/" + memory);
         if (lines.Length == 0) return new List<Neiron>();
         
         string jStr = lines[0];
@@ -62,9 +66,20 @@ public class NeiroWeb
     public void SaveState()
     {
         string json = JsonConvert.SerializeObject(neironArray);
-        StreamWriter file = new StreamWriter(memory);
+        StreamWriter file = new StreamWriter(Application.persistentDataPath + "/" + memory);
         file.WriteLine(json);
         file.Close();
+
+        //StreamWriter file_test = new StreamWriter("TEST.txt");
+        //for (int i = 0; i < 100; i++)
+        //{
+        //    for (int j = 0; j < 100; j++)
+        //    {
+        //        file_test.Write(neironArray[5].weight[i, j] + "\t");
+        //    }
+        //    file_test.Write("\n");
+        //}
+        //file_test.Close();
     }
 
     //Получить список имён образов, имеющихся в памяти
