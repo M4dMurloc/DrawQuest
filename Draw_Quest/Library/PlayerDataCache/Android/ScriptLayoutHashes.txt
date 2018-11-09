@@ -1,6 +1,6 @@
 Android
 PlayerPath?
-E:/UNITY/DrawQuest/Draw_Quest/build06.apk
+C:/Users/MadMurloc/Desktop/KURS/DrawQuest/Draw_Quest/DrawQuest_test_06.apk
 SceneListBegin?
 Assets/Simple Drawing Canvas/Drawing Canvas Example/DrawingScene.unity
 SceneListEnd?

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.UI;
 using Newtonsoft.Json;
 
 public class NeiroWeb
@@ -16,7 +17,7 @@ public class NeiroWeb
 
     public NeiroWeb()
     {
-        Debug.Log("InitWeb");
+        //Debug.Log("InitWeb");
         neironArray = InitWeb();
     }
 
@@ -25,14 +26,14 @@ public class NeiroWeb
     {
         if (!File.Exists(Application.persistentDataPath + "/" + memory))
         {
-            Debug.Log("файл не найден, беру из ресурсов");
+            //Debug.Log("файл не найден, беру из ресурсов");
 
             TextAsset text_asset = Resources.Load<TextAsset>("memory");
             string jStr_res = text_asset.text;
 
             return JsonConvert.DeserializeObject<List<Neiron>>(jStr_res);
         }
-        Debug.Log("файл найден");
+        //Debug.Log("файл найден");
 
         string[] lines = File.ReadAllLines(Application.persistentDataPath + "/" + memory);
         if (lines.Length == 0) return new List<Neiron>();
@@ -94,7 +95,7 @@ public class NeiroWeb
     // эта функция заносит в память нейрона с именем trainingName
     // новый вариант образа data
 
-    public void SetTraining(string trainingName, int[,] data)
+    public void SetTraining(string trainingName, int[,] data, Text textPanel)
     {
         Neiron neiron = neironArray.Find(v => v.obj_name.Equals(trainingName));
         if (neiron == null) // если нейрона с таким именем не существует, создадим новыи и добавим
@@ -104,6 +105,7 @@ public class NeiroWeb
             neironArray.Add(neiron);
         }
         int countTrainig = neiron.Training(data); // обучим нейрон новому образу
+        textPanel.text += ". Вариантов образа в памяти: " + countTrainig.ToString();
         //string messageStr = "Имя образа - " + neiron.GetName() +
         //                    " вариантов образа в памяти - " + countTrainig.ToString();
 

@@ -232,7 +232,7 @@ public class DrawingCanvas : MonoBehaviour
     void OnApplicationQuit()
     {
         nw.SaveState();
-    }
+    } 
 
     public void Learn()
     {
@@ -243,13 +243,13 @@ public class DrawingCanvas : MonoBehaviour
         string s = nw.CheckLitera(arr);
         if (s == null) s = "null";
 
-        Debug.Log("Результат распознавания: " + s);
+        //Debug.Log("Результат распознавания: " + s);
         resultText.text = "Результат распознавания: " + s;
 
         if (enableTraining)
         {
-            nw.SetTraining(s, arr);
-            Debug.Log("Обучение прошло успешно");
+            nw.SetTraining(s, arr, resultText);
+            //Debug.Log("Обучение прошло успешно");
             resultText.text += ". Обучение прошло успешно.";
 
             ClearCanvas();
@@ -273,28 +273,28 @@ public class DrawingCanvas : MonoBehaviour
     {
         if (symbol == null || symbol.Length == 0)
         {
-            Debug.Log("Значение не может иметь длину 0 символов.");
+            //Debug.Log("Значение не может иметь длину 0 символов.");
             return;
         }
 
         objDropdown.options.Add(new Dropdown.OptionData(symbol));
         objDropdown.value = objDropdown.options.Count;
 
-        Debug.Log("Сейчас значение '" + symbol + "' в списке, теперь можно научить нейросеть сеть его распознавать.");
+        //Debug.Log("Сейчас значение '" + symbol + "' в списке, теперь можно научить нейросеть сеть его распознавать.");
     }
 
     public void SetTrainingValue()
     {
         enableTraining = EnableTraningToggle.isOn;
 
-        if(enableTraining)
-        {
-            Debug.Log("Режим обучения включен, теперь нейросеть сможет запоминать введённый образ.");
-        }
-        else
-        {
-            Debug.Log("Режим обучения выключен.");
-        }
+        //if(enableTraining)
+        //{
+        //    Debug.Log("Режим обучения включен, теперь нейросеть сможет запоминать введённый образ.");
+        //}
+        //else
+        //{
+        //    Debug.Log("Режим обучения выключен.");
+        //}
     }
 
     public void ObjectToMemory()
@@ -305,20 +305,20 @@ public class DrawingCanvas : MonoBehaviour
 
             if (litera.Length == 0)
             {
-                Debug.Log("Не выбран ни один символ для занесения в память.");
+                //Debug.Log("Не выбран ни один символ для занесения в память.");
                 resultText.text = "Не выбран ни один символ для занесения в память.";
                 return;
             }
-            nw.SetTraining(litera, arr);
+            nw.SetTraining(litera, arr, resultText);
 
-            Debug.Log("Выбранный символ '" + litera + "' успешно добавлен в память сети");
-            resultText.text = "Выбранный символ '" + litera + "' успешно добавлен в память сети";
+            //Debug.Log("Выбранный символ '" + litera + "' успешно добавлен в память сети");
+            resultText.text = "Выбранный символ '" + litera + "' успешно добавлен в память сети.";
 
             ClearCanvas();
         }
         else
         {
-            Debug.Log("Режим обучения не включен, ничего не произошло.");
+            //Debug.Log("Режим обучения не включен, ничего не произошло.");
             resultText.text = "Режим обучения не включен, ничего не произошло.";
         }
     }
