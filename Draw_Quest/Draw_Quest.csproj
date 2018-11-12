@@ -316,6 +316,7 @@
     <Compile Include="Assets\Simple Drawing Canvas\Drawing Canvas Example\Scripts\SetColorButton.cs" />
     <Compile Include="Assets\Simple Drawing Canvas\Drawing Canvas Example\Scripts\SetSticker.cs" />
     <Compile Include="Assets\Simple Drawing Canvas\TextureDrawingAux.cs" />
+    <Compile Include="Assets\UserInterface\LinearTimer.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Assets\JsonDotNet\Assemblies\AOT\Newtonsoft.Json.XML" />
