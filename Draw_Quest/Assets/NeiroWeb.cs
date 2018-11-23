@@ -15,6 +15,8 @@ public class NeiroWeb
     private const string memory = "memory.txt"; // имя файла хранения сети
     private List<Neiron> neironArray = null; // массив нейронов
 
+    private double match_ratio = 0.0;
+
     public NeiroWeb()
     {
         //Debug.Log("InitWeb");
@@ -60,6 +62,7 @@ public class NeiroWeb
                 res = n.GetName();
             }
         }
+        match_ratio = max;
         return res;      
     }
 
@@ -76,7 +79,7 @@ public class NeiroWeb
         //{
         //    for (int j = 0; j < 100; j++)
         //    {
-        //        file_test.Write(neironArray[5].weight[i, j] + "\t");
+        //        file_test.Write(neironArray[4].weight[i, j] + "\t");
         //    }
         //    file_test.Write("\n");
         //}
@@ -113,5 +116,17 @@ public class NeiroWeb
         //Form resultForm = new ShowMemoryVeight(neiron);
         //resultForm.Text = messageStr;
         //resultForm.Show();
+    }
+
+    public string SetQuest()
+    {
+        int index = UnityEngine.Random.Range(0, neironArray.Count);
+        return neironArray[index].GetName();
+    }
+
+    public int GenerateScore()
+    {
+        double buff = match_ratio * 100;
+        return (int)buff;
     }
 }

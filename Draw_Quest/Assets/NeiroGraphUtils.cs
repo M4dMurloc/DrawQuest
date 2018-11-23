@@ -1,7 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 
 // в этом классе собраны функции для преобразования изображений
 public class NeiroGraphUtils

@@ -15,10 +15,15 @@ public class DrawingCanvas : MonoBehaviour
     public Dropdown objDropdown;
     public Toggle EnableTraningToggle;
     public Text resultText;
+    public Text scoreText;
+    public Text questText;
+    public LinearTimer timer;
 
     private bool enableTraining = false;
     private int[,] arr;
     private NeiroWeb nw;
+    private int score = 0;
+    private string quest_word;
     //-----------------------------------------------------------
     /// <summary>
     /// File name for saving/loading the texture
@@ -227,6 +232,8 @@ public class DrawingCanvas : MonoBehaviour
         {
             objDropdown.AddOptions(items);
         }
+
+        UpdateQuest();
     }
 
     void OnApplicationQuit()
@@ -236,6 +243,7 @@ public class DrawingCanvas : MonoBehaviour
 
     public void Learn()
     {
+#if ADMIN
         int[,] clipArr = NeiroGraphUtils.CutImageToArray(textureDrawingAux.Texture, new Vector2(textureDrawingAux.Texture.width, textureDrawingAux.Texture.height));
 
         if (clipArr == null) return;
@@ -260,6 +268,38 @@ public class DrawingCanvas : MonoBehaviour
         //DialogResult askResult = MessageBox.Show("Результат распознавания - " + s + " ?", "", MessageBoxButtons.YesNo);
         //if (askResult != DialogResult.Yes || !enableTraining || MessageBox.Show("Добавить этот образ в память нейрона '" + s + "'", "", MessageBoxButtons.YesNo) != DialogResult.Yes) return;
         //nw.SetTraining(s, arr);
+#elif USER
+        int[,] clipArr = NeiroGraphUtils.CutImageToArray(textureDrawingAux.Texture, new Vector2(textureDrawingAux.Texture.width, textureDrawingAux.Texture.height));
+
+        if (clipArr == null)
+        {
+            resultText.text = "Вы ничего не нарисовали!";
+            return;
+        }
+
+        arr = NeiroGraphUtils.LeadArray(clipArr, new int[NeiroWeb.neironInArrayWidth, NeiroWeb.neironInArrayHeight]);
+        string s = nw.CheckLitera(arr);
+        if (s == null)
+        {
+            resultText.text = "Ничего не понимаю...";
+            return;
+        }
+        else if (s == quest_word)
+        {
+            resultText.text = "Боже мой, это действительно " + s;
+            UpdateQuest();
+
+            ClearCanvas();
+        }
+        else
+        {
+            resultText.text = "Не похоже это на " + quest_word + ". Больше похоже на " + s + "...";
+            return;
+        }
+
+        score += nw.GenerateScore();
+        scoreText.text = score.ToString();
+#endif
     }
 
     public void AddObj()
@@ -268,7 +308,7 @@ public class DrawingCanvas : MonoBehaviour
         new_objInputField.text = "";
     }
 
-    // процедура помещает строку в список значений
+    //Метод помещает строку в список значений
     private void AddObjectToList(string symbol)
     {
         if (symbol == null || symbol.Length == 0)
@@ -326,5 +366,14 @@ public class DrawingCanvas : MonoBehaviour
     public void AppQuit()
     {
         Application.Quit();
+    }
+
+    private void UpdateQuest()
+    {
+        quest_word = nw.SetQuest();
+        questText.text = "Нарисуйте: " + quest_word;
+        //resultText.text = "";
+
+        timer.SetTime(15);
     }
 }
