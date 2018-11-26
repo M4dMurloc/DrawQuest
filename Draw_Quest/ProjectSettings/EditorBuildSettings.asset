@@ -7,7 +7,10 @@ EditorBuildSettings:
   m_Scenes:
   - enabled: 0
     path: 
-    guid: 2cda990e2423bbf4892e6590ba056729
+    guid: 00000000000000000000000000000000
+  - enabled: 1
+    path: Assets/Simple Drawing Canvas/Drawing Canvas Example/MainMenu.unity
+    guid: cacbae07c18ff8140ae50d662899853e
   - enabled: 1
     path: Assets/Simple Drawing Canvas/Drawing Canvas Example/DrawingScene.unity
     guid: 5759c3f472ced884381ba4b172365e6e

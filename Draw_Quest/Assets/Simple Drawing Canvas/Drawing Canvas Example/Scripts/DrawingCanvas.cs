@@ -4,6 +4,7 @@ using UnityEngine.EventSystems;
 using System.IO;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// Interface between UI and texture drawer
@@ -251,13 +252,11 @@ public class DrawingCanvas : MonoBehaviour
         string s = nw.CheckLitera(arr);
         if (s == null) s = "null";
 
-        //Debug.Log("Результат распознавания: " + s);
         resultText.text = "Результат распознавания: " + s;
 
         if (enableTraining)
         {
             nw.SetTraining(s, arr, resultText);
-            //Debug.Log("Обучение прошло успешно");
             resultText.text += ". Обучение прошло успешно.";
 
             ClearCanvas();
@@ -326,15 +325,6 @@ public class DrawingCanvas : MonoBehaviour
     public void SetTrainingValue()
     {
         enableTraining = EnableTraningToggle.isOn;
-
-        //if(enableTraining)
-        //{
-        //    Debug.Log("Режим обучения включен, теперь нейросеть сможет запоминать введённый образ.");
-        //}
-        //else
-        //{
-        //    Debug.Log("Режим обучения выключен.");
-        //}
     }
 
     public void ObjectToMemory()
@@ -345,20 +335,17 @@ public class DrawingCanvas : MonoBehaviour
 
             if (litera.Length == 0)
             {
-                //Debug.Log("Не выбран ни один символ для занесения в память.");
                 resultText.text = "Не выбран ни один символ для занесения в память.";
                 return;
             }
             nw.SetTraining(litera, arr, resultText);
 
-            //Debug.Log("Выбранный символ '" + litera + "' успешно добавлен в память сети");
             resultText.text = "Выбранный символ '" + litera + "' успешно добавлен в память сети.";
 
             ClearCanvas();
         }
         else
         {
-            //Debug.Log("Режим обучения не включен, ничего не произошло.");
             resultText.text = "Режим обучения не включен, ничего не произошло.";
         }
     }
@@ -366,6 +353,11 @@ public class DrawingCanvas : MonoBehaviour
     public void AppQuit()
     {
         Application.Quit();
+    }
+
+    public void ToMainMenu()
+    {
+        SceneManager.LoadScene("MainMenu");
     }
 
     private void UpdateQuest()

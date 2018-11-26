@@ -1,4 +1,4 @@
 sceneSetups:
-- path: Assets/Simple Drawing Canvas/Drawing Canvas Example/DrawingScene.unity
+- path: Assets/Simple Drawing Canvas/Drawing Canvas Example/MainMenu.unity
   isLoaded: 1
   isActive: 1
