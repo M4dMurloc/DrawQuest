@@ -63,7 +63,9 @@ public class NeiroWeb
             }
         }
         match_ratio = max;
-        return res;      
+
+        if (max > 0.7) return res;
+        else return null;      
     }
 
     //Сохраняет массив нейронов в файл
@@ -109,13 +111,6 @@ public class NeiroWeb
         }
         int countTrainig = neiron.Training(data); // обучим нейрон новому образу
         textPanel.text += ". Вариантов образа в памяти: " + countTrainig.ToString();
-        //string messageStr = "Имя образа - " + neiron.GetName() +
-        //                    " вариантов образа в памяти - " + countTrainig.ToString();
-
-        // покажем визуальное отображение памяти обученного нейрона
-        //Form resultForm = new ShowMemoryVeight(neiron);
-        //resultForm.Text = messageStr;
-        //resultForm.Show();
     }
 
     public string SetQuest()
