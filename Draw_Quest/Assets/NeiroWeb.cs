@@ -4,6 +4,7 @@ using System.IO;
 using UnityEngine;
 using UnityEngine.UI;
 using Newtonsoft.Json;
+using System.Linq;
 
 public class NeiroWeb
 {
@@ -17,10 +18,14 @@ public class NeiroWeb
 
     private double match_ratio = 0.0;
 
+    private int select_quest_index = -1;
+    private List<Neiron> questArray = null;
+
     public NeiroWeb()
     {
         //Debug.Log("InitWeb");
         neironArray = InitWeb();
+        questArray = InitWeb();
     }
 
     //Открывает текстовой файл и преобразовывает его в массив нейронов
@@ -97,7 +102,7 @@ public class NeiroWeb
         return res.ToArray();
     }
 
-    // эта функция заносит в память нейрона с именем trainingName
+    //Этот метод заносит в память нейрона с именем trainingName
     // новый вариант образа data
 
     public void SetTraining(string trainingName, int[,] data, Text textPanel)
@@ -115,8 +120,13 @@ public class NeiroWeb
 
     public string SetQuest()
     {
-        int index = UnityEngine.Random.Range(0, neironArray.Count);
-        return neironArray[index].GetName();
+        if(select_quest_index != -1)
+        {
+            questArray.Remove(questArray[select_quest_index]);
+        }
+
+        select_quest_index = UnityEngine.Random.Range(0, questArray.Count);
+        return questArray[select_quest_index].GetName();
     }
 
     public int GenerateScore()

@@ -19,6 +19,7 @@ public class DrawingCanvas : MonoBehaviour
     public Text scoreText;
     public Text questText;
     public LinearTimer timer;
+    public QuestPanel QuestPanel;
 
     private bool enableTraining = false;
     private int[,] arr;
@@ -92,6 +93,7 @@ public class DrawingCanvas : MonoBehaviour
 
         //    textureDrawingAux.DrawTexture(textureDrawingAux.Width / 2 - texture.width / 2, textureDrawingAux.Height / 2 - texture.height / 2, texture);
         //}
+        resultText.text = "Сделай это!";
     }
 
     void Update()
@@ -234,13 +236,17 @@ public class DrawingCanvas : MonoBehaviour
             objDropdown.AddOptions(items);
         }
 
+        Time.timeScale = 1;
+
         UpdateQuest();
     }
 
+#if ADMIN
     void OnApplicationQuit()
     {
         nw.SaveState();
     } 
+#endif
 
     public void Learn()
     {
@@ -286,13 +292,15 @@ public class DrawingCanvas : MonoBehaviour
         else if (s == quest_word)
         {
             resultText.text = "Боже мой, это действительно " + s;
+            
             UpdateQuest();
 
             ClearCanvas();
         }
         else
         {
-            resultText.text = "Не похоже это на " + quest_word + ". Больше похоже на " + s + "...";
+            resultText.text = "Больше похоже на " + s + ", чем на " + quest_word + "...";
+            QuestPanel.WrongAnswer();
             return;
         }
 
